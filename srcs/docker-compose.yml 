@@ -1,0 +1,58 @@
+version: "3.7"
+services:
+  mariadb:
+    build: ./requirements/mariadb
+    image: mariadb
+    container_name: mariadb
+    volumes:
+      - mdb:/var/lib/mysql
+    expose:
+        - "3306"
+    env_file:
+      - /home/aouhadou/Desktop/.env
+    networks:
+      - inception_net
+    restart: on-failure
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    volumes:
+      - wp:/var/www/html
+    depends_on:
+      - mariadb
+    env_file:
+      - /home/aouhadou/Desktop/.env
+    networks:
+      - inception_net
+    expose:
+      - "9000"
+    restart: on-failure
+  
+  nginx:
+    build: ./requirements/nginx
+    image: nginx
+    container_name: nginx
+    volumes:
+      - wp:/var/www/html
+    ports:
+      - 443:443
+    networks:
+      - inception_net
+    depends_on:
+      - wordpress
+    restart: on-failure
+	volumes:
+  mdb:
+   driver_opts:
+      type: 'none'
+      o: bind
+      device: /home/aouhadou/data/mysql
+  wp:
+   driver_opts:
+      type: 'none'
+      o: bind
+      device: /home/aouhadou/data/wordpress
+networks:
+    inception_net:
+        driver: bridge
