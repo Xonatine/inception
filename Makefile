@@ -70,7 +70,7 @@ fclean: clean
 # Rebuild everything
 re: fclean all
 
-ps:
+ps: mariadbLogs wordpressLogs nginxLogs
 	docker ps
 
 mariadbLogs:
