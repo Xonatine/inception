@@ -45,8 +45,8 @@ all: build up
 
 # Build images
 build:
-    docker compose -f $(COMPOSE_FILE) build
-
+	docker compose -f $(COMPOSE_FILE) build
+	
 # Start services
 up:
  	@mkdir -p $(DATA_PATH)/db
