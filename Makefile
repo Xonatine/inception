@@ -38,19 +38,19 @@
 
 # Variables
 COMPOSE_FILE = srcs/docker-compose.yml
-DATA_DIR = /home/$(shell whoami)/data
+DATA_DIR = /home/$(USER)/data
 
 
 all: build up
 
 # Build images
 build:
+	@mkdir -p $(DATA_PATH)/mariadb
+	@mkdir -p $(DATA_PATH)/wordpress
 	docker compose -f $(COMPOSE_FILE) build
 
 # Start services
 up:
-	@mkdir -p $(DATA_PATH)/mariadb
-	@mkdir -p $(DATA_PATH)/wordpress
 	docker compose -f $(COMPOSE_FILE) up -d
 
 # Stop services
