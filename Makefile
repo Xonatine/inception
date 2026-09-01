@@ -49,7 +49,7 @@ build:
 
 # Start services
 up:
-	@mkdir -p $(DATA_PATH)/db
+	@mkdir -p $(DATA_PATH)/mariadb
 	@mkdir -p $(DATA_PATH)/wordpress
 	docker compose -f $(COMPOSE_FILE) up -d
 
