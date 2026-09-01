@@ -46,26 +46,26 @@ all: build up
 # Build images
 build:
 	docker compose -f $(COMPOSE_FILE) build
-	
+
 # Start services
 up:
- 	@mkdir -p $(DATA_PATH)/db
- 	@mkdir -p $(DATA_PATH)/wordpress
-    docker compose -f $(COMPOSE_FILE) up -d
+	@mkdir -p $(DATA_PATH)/db
+	@mkdir -p $(DATA_PATH)/wordpress
+	docker compose -f $(COMPOSE_FILE) up -d
 
 # Stop services
 down:
-    docker compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) down
 
 # Clean containers and images
 clean:
-    docker compose -f $(COMPOSE_FILE) down
-    docker system prune -af
+	docker compose -f $(COMPOSE_FILE) down
+	docker system prune -af
 
 # Full clean including volumes
 fclean: clean
-    docker volume prune -f
-    sudo rm -rf $(DATA_DIR)
+	docker volume prune -f
+	sudo rm -rf $(DATA_DIR)
 
 # Rebuild everything
 re: fclean all
