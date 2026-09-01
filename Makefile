@@ -38,7 +38,7 @@
 
 # Variables
 COMPOSE_FILE = srcs/docker-compose.yml
-DATA_DIR = /home/$(USER)/data
+DATA_DIR = /home/$(shell whoami)/data
 
 
 all: build up
