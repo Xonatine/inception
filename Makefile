@@ -43,19 +43,14 @@ DATA_DIR = /home/$(USER)/data
 
 all: build up
 
-# Create data directories
-$(DATA_DIR)/mariadb:
-    mkdir -p $(DATA_DIR)/mariadb
-
-$(DATA_DIR)/wordpress:
-    mkdir -p $(DATA_DIR)/wordpress
-
 # Build images
 build: $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
     docker compose -f $(COMPOSE_FILE) build
 
 # Start services
 up:
+ 	@mkdir -p $(DATA_PATH)/db
+ 	@mkdir -p $(DATA_PATH)/wordpress
     docker compose -f $(COMPOSE_FILE) up -d
 
 # Stop services
