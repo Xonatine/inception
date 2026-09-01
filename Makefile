@@ -44,7 +44,7 @@ DATA_DIR = /home/$(USER)/data
 all: build up
 
 # Build images
-build: $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
+build:
     docker compose -f $(COMPOSE_FILE) build
 
 # Start services
