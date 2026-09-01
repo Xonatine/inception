@@ -45,8 +45,8 @@ all: build up
 
 # Build images
 build:
-	@mkdir -p $(DATA_PATH)/mariadb
-	@mkdir -p $(DATA_PATH)/wordpress
+	@mkdir -p $(DATA_DIR)/mariadb
+	@mkdir -p $(DATA_DIR)/wordpress
 	docker compose -f $(COMPOSE_FILE) build
 
 # Start services
