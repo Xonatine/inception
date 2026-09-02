@@ -11,7 +11,7 @@ RUN mkdir -p /run/mysqld /var/lib/mysql \
     && chmod 755 /run/mysqld
 
 # Copy configuration
-COPY ./conf/mariadb.conf /etc/mysql/mariadb.conf
+COPY ./conf/mariadb.conf /etc/mysql/mariadb.conf.d/
 COPY ./tools/init_db.sh /usr/local/bin/init_db.sh
 
 # Set permissions
