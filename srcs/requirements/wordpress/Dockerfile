@@ -2,6 +2,7 @@ FROM debian:bookworm
 
 # Install PHP-FPM and required extensions
 RUN apt-get update && apt-get install -y \
+  php8.2 \
   php8.2-fpm \
   php8.2-mysql \
   php8.2-curl \
@@ -11,8 +12,19 @@ RUN apt-get update && apt-get install -y \
   php8.2-soap \
   php8.2-xml \
   php8.2-zip \
+	php8.2-mysqli \
+	php8.2-json \
+	php8.2-dom \
+	php8.2-exif \
+	php8.2-fileinfo \
+	php8.2-openssl \
+	php8.2-phar \
+	php8.2-iconv \
   wget \
   curl \
+  mariadb-client \
+	netcat-openbsd \
+	ca-certificates \
   && ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \
   && rm -rf /var/lib/apt/lists/*
 
