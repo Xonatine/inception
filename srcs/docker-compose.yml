@@ -1,13 +1,9 @@
 services:
   mariadb:
-    build: 
+    container_name: mariadb
+    build:
       context: requirements/mariadb
     image: mariadb:inception
-    container_name: mariadb
-    networks:
-      - inception-network
-    volumes:
-      - mariadb_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password.txt
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -16,6 +12,10 @@ services:
     secrets:
       - db_root_password
       - db_password
+    networks:
+      - inception-network
+    volumes:
+      - mariadb_data:/var/lib/mysql
     restart: always
 
   wordpress:
@@ -33,7 +33,7 @@ services:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password.txt
       WORDPRESS_TABLE_PREFIX: wp_
     secrets:
       - db_password
