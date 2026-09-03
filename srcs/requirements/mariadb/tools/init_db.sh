@@ -9,7 +9,12 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "Initializing data directory..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
 fi
-
+if [ -n "$MYSQL_ROOT_PASSWORD_FILE" ] && [ -f "$MYSQL_ROOT_PASSWORD_FILE" ]; then
+    MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
+fi
+if [ -n "$MYSQL_PASSWORD_FILE" ] && [ -f "$MYSQL_PASSWORD_FILE" ]; then
+    MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
+fi
 # Start the server (no networking for setup)
 echo "Starting temporary MariaDB server for setup..."
 mysqld --skip-networking --socket=/run/mysqld/mysqld.sock --user=mysql &

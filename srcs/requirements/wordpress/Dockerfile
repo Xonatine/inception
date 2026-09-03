@@ -13,9 +13,6 @@ RUN apt-get update && apt-get install -y \
   php8.2-zip \
   wget \
   curl \
-  mariadb-client \
-	netcat-openbsd \
-	ca-certificates \
   && ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \
   && rm -rf /var/lib/apt/lists/*
 
@@ -28,6 +25,10 @@ COPY conf/www.conf /etc/php/8.2/fpm/pool.d/
 # Copy and set permissions for setup script
 COPY tools/setup_wordpress.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup_wordpress.sh
+
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
 
 EXPOSE 9000
 

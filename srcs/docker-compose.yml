@@ -1,22 +1,22 @@
 services:
   mariadb:
-    container_name: mariadb
     build:
       context: requirements/mariadb
     image: mariadb:inception
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password.txt
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password.txt
-    secrets:
-      - db_root_password
-      - db_password
+    container_name: mariadb
     networks:
       - inception-network
     volumes:
       - mariadb_data:/var/lib/mysql
-    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_root_password
+      - db_password
+    restart: unless-stopped
 
   wordpress:
     build:
@@ -30,14 +30,23 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password.txt
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
       WORDPRESS_TABLE_PREFIX: wp_
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_ADMIN_PASSWORD_FILE: /run/secrets/wp_admin_password
+      WP_USER: ${WP_USER}
+      WP_USER_EMAIL: ${WP_USER_EMAIL}
+      WP_USER_PASSWORD_FILE: /run/secrets/wp_user_password
     secrets:
       - db_password
-    restart: always
+      - wp_admin_password
+      - wp_user_password
+    restart: unless-stopped
 
   nginx:
     build:
@@ -46,15 +55,15 @@ services:
     container_name: nginx
     depends_on:
       - wordpress
-    networks:
-      - inception-network
     ports:
       - "443:443"
+    networks:
+      - inception-network
     volumes:
       - wordpress_data:/var/www/html
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
-    restart: always
+    restart: unless-stopped
 
 networks:
   inception-network:
@@ -79,3 +88,7 @@ secrets:
     file: ../secrets/db_root_password.txt
   db_password:
     file: ../secrets/db_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt

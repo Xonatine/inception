@@ -6,13 +6,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create directories
-RUN mkdir -p /run/mysqld /var/lib/mysql \
-    && chown -R mysql:mysql /run/mysqld /var/lib/mysql \
-    && chmod 755 /run/mysqld
+RUN mkdir -p /var/run/mysqld \
+    && chown -R mysql:mysql /var/run/mysqld \
+    && chmod 755 /var/run/mysqld
 
 # Copy configuration
-COPY ./conf/mariadb.conf /etc/mysql/mariadb.conf.d/50-server.cnf
-COPY ./tools/init_db.sh /usr/local/bin/init_db.sh
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/
+COPY tools/init_db.sh /usr/local/bin/
 
 # Set permissions
 RUN chmod +x /usr/local/bin/init_db.sh
@@ -25,4 +25,4 @@ ENV MYSQL_ROOT_PASSWORD=root \
 
 EXPOSE 3306
 
-ENTRYPOINT ["/usr/local/bin/init_db.sh"]
+ENTRYPOINT ["init_db.sh"]
