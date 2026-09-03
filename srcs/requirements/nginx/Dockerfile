@@ -5,14 +5,14 @@ RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN adduser -D -g 'www' www
+RUN usermod -u 33 www-data && groupmod -g 33 www-data
 
-RUN mkdir /www &&\
-	chown -R www:www /var/lib/nginx &&\
-	chown -R www:www /www
+RUN mkdir -p /etc/nginx/ssl
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/script.sh /script.sh
 RUN chmod +x /script.sh
+
+EXPOSE 443
 
 ENTRYPOINT ["/usr/local/bin/generate_ssl.sh"]
