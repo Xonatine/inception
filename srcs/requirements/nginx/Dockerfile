@@ -15,4 +15,4 @@ RUN chmod +x /script.sh
 
 EXPOSE 443
 
-ENTRYPOINT ["/usr/local/bin/generate_ssl.sh"]
+ENTRYPOINT ["/usr/local/bin/script.sh"]

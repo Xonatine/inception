@@ -34,5 +34,5 @@ WORKDIR /var/www/wordpress
 EXPOSE 9000
 
 
-ENTRYPOINT ["/usr/local/bin/setup_wordpress.sh"]
+ENTRYPOINT ["/usr/local/bin/script.sh"]
 

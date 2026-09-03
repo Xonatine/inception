@@ -15,4 +15,4 @@ RUN chmod -x /usr/local/bin/script.sh
 EXPOSE 3306
 
 
-ENTRYPOINT ["/usr/local/bin/init_db.sh"]
+ENTRYPOINT ["/usr/local/bin/script.sh"]
