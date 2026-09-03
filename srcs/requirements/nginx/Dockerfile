@@ -1,24 +1,16 @@
 FROM debian:bookworm
 
-# Install nginx and openssl
-RUN apt-get update && apt-get install -y \
-    nginx \
-    openssl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update &&\
+	apk add --no-cache nginx openssl
 
-# Ensure nginx runs as www-data with correct UID
-RUN usermod -u 33 www-data && groupmod -g 33 www-data
+RUN adduser -D -g 'www' www
 
-# Create SSL directory
-RUN mkdir -p /etc/nginx/ssl
+RUN mkdir /www &&\
+	chown -R www:www /var/lib/nginx &&\
+	chown -R www:www /www
 
-# Copy configuration files
 COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY tools/generate_ssl.sh /usr/local/bin/
-
-# Set permissions
-RUN chmod +x /usr/local/bin/*.sh
-
-EXPOSE 443
+COPY tools/script.sh /script.sh
+RUN chmod +x /script.sh
 
 ENTRYPOINT ["/usr/local/bin/generate_ssl.sh"]

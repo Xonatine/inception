@@ -1,35 +1,43 @@
 FROM debian:bookworm
 
-# Install PHP-FPM and required extensions
-RUN apt-get update && apt-get install -y \
-  php8.2-fpm \
-  php8.2-mysql \
-  php8.2-curl \
-  php8.2-gd \
-  php8.2-intl \
-  php8.2-mbstring \
-  php8.2-soap \
-  php8.2-xml \
-  php8.2-zip \
-  wget \
-  curl \
-  mariadb-client \
+RUN apk add --no-cache\
+	php82\
+	php82-fpm\
+	php82-mysqli\
+	php82-json\
+	php82-curl\
+	php82-dom\
+	php82-exif\
+	php82-fileinfo\
+	php82-mbstring\
+	php82-openssl\
+	php82-xml\
+	php82-zip\
+	php82-phar \
+	php82-iconv \
+	curl \
+	wget \
+	mariadb-client \
 	netcat-openbsd \
-	ca-certificates \
-  && ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \
-  && rm -rf /var/lib/apt/lists/*
+	ca-certificates
 
-# Create WordPress directory
-WORKDIR /var/www/html
+RUN adduser -S www-data -G www-data || true
+RUN mkdir -p /var/www/wordpress /run/php && \
+    chown -R www-data:www-data /var/www/wordpress /run/php
 
-# Copy PHP-FPM configuration (correct version)
-COPY conf/www.conf /etc/php/8.2/fpm/pool.d/
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
+RUN ln -s /usr/bin/php82 /usr/local/bin/php
 
-# Copy and set permissions for setup script
-COPY tools/setup_wordpress.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/setup_wordpress.sh
+COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
+COPY ./tools/script.sh /usr/local/bin/script.sh
+RUN chmod +x /usr/local/bin/script.sh
+
+WORKDIR /var/www/wordpress
 
 EXPOSE 9000
+
 
 ENTRYPOINT ["/usr/local/bin/setup_wordpress.sh"]
 

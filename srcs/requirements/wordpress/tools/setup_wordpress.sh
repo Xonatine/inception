@@ -1,61 +1,57 @@
-#!/bin/bash
+#!/bin/ash
 set -e
 
-WP_PATH="/var/www/html"
+SQL_PASSWORD=$(cat /run/secrets/db_password)
+WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+WP_PASSWORD=$(cat /run/secrets/wp_password)
+WP="php -d memory_limit=512M /usr/local/bin/wp"
 
-# Read password from secret file
-if [ -n "$WORDPRESS_DB_PASSWORD_FILE" ] && [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; then
-    WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
-    export WORDPRESS_DB_PASSWORD
-fi
+echo "Esperando a MariaDB..."
+while ! ping -c 1 mariadb > /dev/null 2>&1; do
+    echo "DNS mariadb no resuelto todavía..."
+    sleep 2
+done
 
-echo "Setting up WordPress..."
+while ! nc -z mariadb 3306; do
+    echo "Puerto 3306 de mariadb no responde..."
+    sleep 2
+done
+echo "MariaDB lista y visible."
 
-# Download and configure WordPress if not present
-if [ ! -f "$WP_PATH/wp-config.php" ]; then
-    echo "Downloading WordPress..."
-    wget -q https://wordpress.org/latest.tar.gz -O /tmp/wordpress.tar.gz
-    tar -xzf /tmp/wordpress.tar.gz -C /tmp
-    rm /tmp/wordpress.tar.gz
+cd /var/www/wordpress
 
-    # Copy only missing files (avoid overwriting existing content)
-    cp -rn /tmp/wordpress/* "$WP_PATH" || true
-    rm -rf /tmp/wordpress
+export PHP_OPTIONS="-d memory_limit=512M"
 
-    # Fetch security salts from WordPress API
-    WP_SALTS=$(wget -qO- https://api.wordpress.org/secret-key/1.1/salt/)
+echo "Descargando WordPress..."
+$WP core download --allow-root || echo "WordPress ya está descargado."
 
-    # Create wp-config.php
-    cat > "$WP_PATH/wp-config.php" << EOF
-<?php
-define('DB_NAME', '${WORDPRESS_DB_NAME}');
-define('DB_USER', '${WORDPRESS_DB_USER}');
-define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');
-define('DB_HOST', '${WORDPRESS_DB_HOST}');
-define('DB_CHARSET', 'utf8');
-define('DB_COLLATE', '');
+echo "Creando wp-config.php..."
+$WP config create \
+    --dbname="$SQL_DATABASE" \
+    --dbuser="$SQL_USER" \
+    --dbpass="$SQL_PASSWORD" \
+    --dbhost="mariadb" \
+    --force \
+    --allow-root
 
-\$table_prefix = '${WORDPRESS_TABLE_PREFIX:-wp_}';
+echo "Instalando WordPress..."
+$WP core install \
+    --url="https://$(USER).42.fr" \
+    --title="Inception" \
+    --admin_user="$(USER)" \
+    --admin_password="$WP_ADMIN_PASSWORD" \
+    --admin_email="$(USER)@student.42madrid.com" \
+    --skip-email \
+    --allow-root
 
-${WP_SALTS}
+echo "Creando segundo usuario..."
+$WP user create "$WP_USER" "$WP_USER@student.42.fr" \
+    --user_pass="$WP_PASSWORD" \
+    --role=author \
+    --allow-root
 
-define('WP_DEBUG', false);
+chown -R www-data:www-data /var/www/wordpress
+chmod -R 755 /var/www/wordpress
 
-if ( !defined('ABSPATH') )
-    define('ABSPATH', __DIR__ . '/');
-
-require_once ABSPATH . 'wp-settings.php';
-EOF
-
-    # Set secure permissions
-    find "$WP_PATH" -type d -exec chmod 750 {} \;
-    find "$WP_PATH" -type f -exec chmod 640 {} \;
-    chown -R www-data:www-data "$WP_PATH"
-
-    echo "WordPress setup complete."
-else
-    echo "WordPress already initialized, skipping setup."
-fi
-
-echo "Starting PHP-FPM..."
-exec php-fpm8.2 -F
+echo "Iniciando PHP-FPM..."
+exec /usr/sbin/php-fpm82 -F
