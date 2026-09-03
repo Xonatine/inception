@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-RUN apk add --no-cache\
+RUN apt-get update && apt-get install -y\
 	php82\
 	php82-fpm\
 	php82-mysqli\
