@@ -11,7 +11,7 @@ RUN usermod -u 33 www-data && groupmod -g 33 www-data
 RUN mkdir -p /etc/nginx/ssl
 
 # Se copia como plantilla, no como conf final
-COPY conf/nginx.conf.template /etc/nginx/nginx.conf.template
+COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/generate_ssl.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/*.sh
 

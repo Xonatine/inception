@@ -16,6 +16,7 @@ services:
     secrets:
       - db_root_password
       - db_password
+    restart: unless-stopped
 
   wordpress:
     build:
@@ -44,6 +45,7 @@ services:
     secrets:
       - db_password
       - wp_admin_password
+    restart: unless-stopped
 
   nginx:
     build:
@@ -60,6 +62,7 @@ services:
       - wordpress_data:/var/www/html
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
+    restart: unless-stopped
 
 networks:
   inception-network:
