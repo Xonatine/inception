@@ -30,22 +30,21 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
       WORDPRESS_TABLE_PREFIX: wp_
+      DOMAIN_NAME: ${DOMAIN_NAME}
       WP_ADMIN_USER: ${WP_ADMIN_USER}
-      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
       WP_ADMIN_PASSWORD_FILE: /run/secrets/wp_admin_password
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
       WP_USER: ${WP_USER}
+      WP_USER_PASSWORD: ${WP_USER_PASSWORD}
       WP_USER_EMAIL: ${WP_USER_EMAIL}
-      WP_USER_PASSWORD_FILE: /run/secrets/wp_user_password
     secrets:
       - db_password
       - wp_admin_password
-      - wp_user_password
     restart: unless-stopped
 
   nginx:
@@ -55,10 +54,10 @@ services:
     container_name: nginx
     depends_on:
       - wordpress
-    ports:
-      - "443:443"
     networks:
       - inception-network
+    ports:
+      - "443:443"
     volumes:
       - wordpress_data:/var/www/html
     environment:
@@ -90,5 +89,3 @@ secrets:
     file: ../secrets/db_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
-  wp_user_password:
-    file: ../secrets/wp_user_password.txt
