@@ -16,6 +16,13 @@ services:
     secrets:
       - db_root_password
       - db_password
+    healthcheck:
+        test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+        start_period: 1m
+        start_interval: 10s
+        interval: 1m
+        timeout: 5s
+        retries: 3
     restart: on-failure
 
   wordpress:
