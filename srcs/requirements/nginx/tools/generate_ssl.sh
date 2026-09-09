@@ -18,7 +18,7 @@ else
 fi
 
 # --- Sustituir ${DOMAIN_NAME} en la plantilla antes de arrancar ---
-envsubst '${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf.template
+envsubst '${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 echo "Testing nginx configuration..."
 nginx -t
