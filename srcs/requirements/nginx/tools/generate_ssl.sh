@@ -3,7 +3,7 @@ set -e
 
 mkdir -p /etc/nginx/ssl
 
-: "${DOMAIN_NAME:=localhost}"
+#: "${DOMAIN_NAME:=localhost}"
 
 if [ ! -f /etc/nginx/ssl/nginx.crt ]; then
     echo "Generating self-signed SSL certificate for ${DOMAIN_NAME}..."
