@@ -3,7 +3,6 @@ set -e
 
 WP_PATH="/var/www/html"
 
-# --- Leer secretos ---
 if [ -n "$WORDPRESS_DB_PASSWORD_FILE" ] && [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; then
     WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
     export WORDPRESS_DB_PASSWORD
@@ -47,14 +46,12 @@ EOF
 
     chown -R www-data:www-data "$WP_PATH"
 
-    # --- Esperar a que MariaDB acepte conexiones ---
     echo "Waiting for database..."
     until php -r "new mysqli('${WORDPRESS_DB_HOST}', '${WORDPRESS_DB_USER}', '${WORDPRESS_DB_PASSWORD}', '${WORDPRESS_DB_NAME}');" 2>/dev/null; do
         sleep 1
     done
     echo "Database is ready."
 
-    # --- Instalación automática (sin el asistente web) ---
     su -s /bin/bash www-data -c "wp core install \
         --path='$WP_PATH' \
         --url='https://${DOMAIN_NAME}' \

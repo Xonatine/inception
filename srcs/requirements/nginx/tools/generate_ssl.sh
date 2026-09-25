@@ -3,7 +3,7 @@ set -e
 
 mkdir -p /etc/nginx/ssl
 
-#: "${DOMAIN_NAME:=localhost}"
+: "${DOMAIN_NAME:=localhost}"
 
 if [ ! -f /etc/nginx/ssl/nginx.crt ]; then
     echo "Generating self-signed SSL certificate for ${DOMAIN_NAME}..."
@@ -17,7 +17,6 @@ else
     echo "SSL certificate already exists. Skipping generation."
 fi
 
-# --- Sustituir ${DOMAIN_NAME} en la plantilla antes de arrancar ---
 envsubst '${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 echo "Testing nginx configuration..."
